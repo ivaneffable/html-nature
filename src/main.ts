@@ -19,10 +19,9 @@ class Walker {
       pixel.style.top = `${this.y - 2}px`;
       app.appendChild(pixel);
 
-      // Create jungle-like sounds based on position
-      // Map x to lower frequencies for deeper, more ambient jungle sounds
+      // Map x to lower frequencies for deeper sounds
       const xFrequency = (this.x / window.innerWidth) * 300 + 100; // 100-400 Hz range
-      // Map y to duration - higher positions = shorter chirps (like birds)
+      // Map y to duration - higher positions = shorter chirps
       const yDuration =
         ((window.innerHeight - this.y) / window.innerHeight) * 0.4 + 0.05; // 0.05-0.45 seconds
       playNatureTone(xFrequency, yDuration);
