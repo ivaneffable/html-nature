@@ -36,3 +36,36 @@ body {
   z-index: 1000;
   pointer-events: none;
 }
+
+.config-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.walker-config {
+  background-color: rgba(255, 140, 0, 0.1);
+  border: 2px solid #ff8c00;
+  border-radius: 8px;
+  z-index: 1000;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.walker-config label {
+  color: #ff8c00;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.walker-config input[type="checkbox"] {
+  accent-color: #ff8c00;
+  cursor: pointer;
+}
