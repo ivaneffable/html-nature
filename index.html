@@ -1,6 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Google Consent Mode must be loaded BEFORE gtag.js -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+
+      // Set default consent BEFORE loading gtag.js
+      gtag("consent", "default", {
+        analytics_storage: "denied",
+        ad_storage: "denied",
+        functionality_storage: "denied",
+        personalization_storage: "denied",
+        security_storage: "granted",
+        wait_for_update: 500,
+      });
+
+      gtag("js", new Date());
+      gtag("config", "G-DBFXE8SNLM");
+    </script>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-DBFXE8SNLM"
+    ></script>
+    <!-- head content -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.1.0/dist/cookieconsent.css"
+    />
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,5 +47,7 @@
     <div class="config-container"></div>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <!-- body content -->
+    <script type="module" src="src/cookieconsent-config.ts"></script>
   </body>
 </html>
