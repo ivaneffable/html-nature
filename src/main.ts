@@ -1,6 +1,7 @@
 import "./main.css";
 import { playNatureTone } from "./audio";
 
+const occupiedPositions = new Map<string, string>();
 let numOfWalkers = 0;
 const COLORS = ["#e94b3c", "#50c878", "#ff8c00", "#4a90e2", "#9b59b6"];
 
@@ -8,6 +9,7 @@ class Walker {
   x: number;
   y: number;
   audioEnabled: boolean = false;
+  avoidOthers: boolean = false;
   color: string;
 
   constructor() {
@@ -36,10 +38,85 @@ class Walker {
         playNatureTone(xFrequency, yDuration);
       }
     }
+    const key = `${this.x},${this.y}`;
+    occupiedPositions.set(key, this.color);
   }
 
   step() {
-    const choice = Math.floor(Math.random() * 4);
+    const weights = [1, 1, 1, 1]; // [right, left, down, up]
+
+    // Only check for obstacles if avoidOthers is enabled
+    if (this.avoidOthers) {
+      // Check for occupied positions in all 4 directions (50px range)
+
+      // Check right direction (x + 4 to x + 50)
+      let hasOccupiedRight = false;
+      for (let checkX = this.x + 4; checkX <= this.x + 50; checkX += 1) {
+        if (
+          occupiedPositions.get(`${checkX},${this.y}`) !== undefined &&
+          occupiedPositions.get(`${checkX},${this.y}`) !== this.color
+        ) {
+          hasOccupiedRight = true;
+          break;
+        }
+      }
+
+      // Check left direction (x - 4 to x - 50)
+      let hasOccupiedLeft = false;
+      for (let checkX = this.x - 4; checkX >= this.x - 50; checkX -= 1) {
+        if (
+          occupiedPositions.get(`${checkX},${this.y}`) !== undefined &&
+          occupiedPositions.get(`${checkX},${this.y}`) !== this.color
+        ) {
+          hasOccupiedLeft = true;
+          break;
+        }
+      }
+
+      // Check down direction (y + 4 to y + 50)
+      let hasOccupiedDown = false;
+      for (let checkY = this.y + 4; checkY <= this.y + 50; checkY += 1) {
+        if (
+          occupiedPositions.get(`${this.x},${checkY}`) !== undefined &&
+          occupiedPositions.get(`${this.x},${checkY}`) !== this.color
+        ) {
+          hasOccupiedDown = true;
+          break;
+        }
+      }
+
+      // Check up direction (y - 4 to y - 50)
+      let hasOccupiedAbove = false;
+      for (let checkY = this.y - 4; checkY >= this.y - 50; checkY -= 1) {
+        if (
+          occupiedPositions.get(`${this.x},${checkY}`) !== undefined &&
+          occupiedPositions.get(`${this.x},${checkY}`) !== this.color
+        ) {
+          hasOccupiedAbove = true;
+          break;
+        }
+      }
+
+      // Reduce probability to 15% for directions with obstacles
+      if (hasOccupiedRight) weights[0] = 0.15;
+      if (hasOccupiedLeft) weights[1] = 0.15;
+      if (hasOccupiedDown) weights[2] = 0.15;
+      if (hasOccupiedAbove) weights[3] = 0.15;
+    }
+
+    // Calculate total weight and choose direction
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+    let random = Math.random() * totalWeight;
+    let choice = 0;
+
+    for (let i = 0; i < weights.length; i++) {
+      random -= weights[i];
+      if (random <= 0) {
+        choice = i;
+        break;
+      }
+    }
+
     switch (choice) {
       case 0:
         this.x += 4;
@@ -75,23 +152,40 @@ function createWalkerConfig(color: string, walkerInstance: Walker) {
     const walkerConfig = clone.querySelector(
       ".walker-config"
     ) as HTMLDivElement;
-    const checkbox = clone.querySelector(
-      'input[type="checkbox"]'
+
+    const audioCheckbox = clone.querySelector(
+      ".audio-checkbox"
     ) as HTMLInputElement;
-    const label = clone.querySelector("label") as HTMLLabelElement;
+    const audioLabel = clone.querySelector(".audio-label") as HTMLLabelElement;
+
+    const avoidCheckbox = clone.querySelector(
+      ".avoid-checkbox"
+    ) as HTMLInputElement;
+    const avoidLabel = clone.querySelector(".avoid-label") as HTMLLabelElement;
 
     // Set the color as a CSS custom property on the walker-config element
     if (walkerConfig) {
       walkerConfig.style.setProperty("--walker-color", color);
     }
 
-    checkbox.id = `walker-checkbox-${numOfWalkers}`;
-    checkbox.checked = false;
-    label.htmlFor = `walker-checkbox-${numOfWalkers}`;
+    // Setup audio checkbox
+    audioCheckbox.id = `walker-audio-${numOfWalkers}`;
+    audioCheckbox.checked = false;
+    audioLabel.htmlFor = `walker-audio-${numOfWalkers}`;
 
-    checkbox.addEventListener("change", (e) => {
+    audioCheckbox.addEventListener("change", (e) => {
       const target = e.target as HTMLInputElement;
       walkerInstance.audioEnabled = target.checked;
+    });
+
+    // Setup avoid checkbox
+    avoidCheckbox.id = `walker-avoid-${numOfWalkers}`;
+    avoidCheckbox.checked = false; // Default to disabled
+    avoidLabel.htmlFor = `walker-avoid-${numOfWalkers}`;
+
+    avoidCheckbox.addEventListener("change", (e) => {
+      const target = e.target as HTMLInputElement;
+      walkerInstance.avoidOthers = target.checked;
     });
 
     // Append to container
