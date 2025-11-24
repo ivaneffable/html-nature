@@ -22,7 +22,6 @@ body {
   position: absolute;
   width: 4px;
   height: 4px;
-  background-color: red;
   pointer-events: none;
 }
 
@@ -48,8 +47,12 @@ body {
 }
 
 .walker-config {
-  background-color: rgba(255, 140, 0, 0.1);
-  border: 2px solid #ff8c00;
+  background-color: color-mix(
+    in srgb,
+    var(--walker-color, #ff8c00) 10%,
+    transparent
+  );
+  border: 2px solid var(--walker-color);
   border-radius: 8px;
   z-index: 1000;
   padding: 12px;
@@ -59,13 +62,44 @@ body {
 }
 
 .walker-config label {
-  color: #ff8c00;
+  color: var(--walker-color);
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
 }
 
 .walker-config input[type="checkbox"] {
-  accent-color: #ff8c00;
+  accent-color: var(--walker-color);
   cursor: pointer;
+}
+
+#add-walker-btn {
+  background-color: #ff8c00;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#add-walker-btn:hover {
+  background-color: #e67e00;
+}
+
+#add-walker-btn:active {
+  background-color: #cc7000;
+}
+
+#add-walker-btn:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+#add-walker-btn:disabled:hover {
+  background-color: #cccccc;
 }

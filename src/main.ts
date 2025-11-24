@@ -1,14 +1,19 @@
 import "./main.css";
 import { playNatureTone } from "./audio";
 
+let numOfWalkers = 0;
+const COLORS = ["#e94b3c", "#50c878", "#ff8c00", "#4a90e2", "#9b59b6"];
+
 class Walker {
   x: number;
   y: number;
   audioEnabled: boolean = false;
+  color: string;
 
   constructor() {
     this.x = window.innerWidth / 2;
     this.y = window.innerHeight / 2;
+    this.color = COLORS[numOfWalkers % COLORS.length];
   }
 
   show() {
@@ -18,6 +23,7 @@ class Walker {
       pixel.className = "pixel";
       pixel.style.left = `${this.x - 2}px`;
       pixel.style.top = `${this.y - 2}px`;
+      pixel.style.backgroundColor = this.color;
       app.appendChild(pixel);
 
       // Only play audio if enabled
@@ -57,7 +63,7 @@ class Walker {
   }
 }
 
-function createWalkerConfig() {
+function createWalkerConfig(color: string, walkerInstance: Walker) {
   const configContainer = document.querySelector(".config-container");
   const template = document.getElementById(
     "walker-config-template"
@@ -66,18 +72,26 @@ function createWalkerConfig() {
   if (configContainer && template) {
     const clone = template.content.cloneNode(true) as DocumentFragment;
 
+    const walkerConfig = clone.querySelector(
+      ".walker-config"
+    ) as HTMLDivElement;
     const checkbox = clone.querySelector(
       'input[type="checkbox"]'
     ) as HTMLInputElement;
     const label = clone.querySelector("label") as HTMLLabelElement;
 
-    checkbox.id = "walker-checkbox";
+    // Set the color as a CSS custom property on the walker-config element
+    if (walkerConfig) {
+      walkerConfig.style.setProperty("--walker-color", color);
+    }
+
+    checkbox.id = `walker-checkbox-${numOfWalkers}`;
     checkbox.checked = false;
-    label.htmlFor = "walker-checkbox";
+    label.htmlFor = `walker-checkbox-${numOfWalkers}`;
 
     checkbox.addEventListener("change", (e) => {
       const target = e.target as HTMLInputElement;
-      walker.audioEnabled = target.checked;
+      walkerInstance.audioEnabled = target.checked;
     });
 
     // Append to container
@@ -87,9 +101,30 @@ function createWalkerConfig() {
 
 const walkers: Walker[] = [];
 
-// Create walker first
-const walker = new Walker();
-walker.draw();
-walkers.push(walker);
+function addWalker() {
+  const walker = new Walker();
+  walker.draw();
+  walkers.push(walker);
+  createWalkerConfig(walker.color, walker);
+  numOfWalkers++;
 
-createWalkerConfig();
+  if (numOfWalkers >= 5) {
+    const addWalkerBtn = document.getElementById(
+      "add-walker-btn"
+    ) as HTMLButtonElement;
+    if (addWalkerBtn) {
+      addWalkerBtn.disabled = true;
+    }
+  }
+}
+
+// Create first walker
+addWalker();
+
+// Add event listener to the "Add Walker" button
+const addWalkerBtn = document.getElementById("add-walker-btn");
+if (addWalkerBtn) {
+  addWalkerBtn.addEventListener("click", () => {
+    addWalker();
+  });
+}
