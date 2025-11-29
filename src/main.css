@@ -13,9 +13,14 @@ body {
     Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
+.fade-out {
+  opacity: 0;
+}
+
 #app {
   width: 100vw;
   height: 100vh;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .pixel {
@@ -26,13 +31,9 @@ body {
 }
 
 .title {
-  position: absolute;
-  top: 20px;
-  left: 20px;
   font-size: 78px;
   font-weight: bold;
   color: #ff8c00;
-  z-index: 1000;
   pointer-events: none;
 }
 
