@@ -1,6 +1,6 @@
 import type { AbstractView } from "./AbstractView";
 import { Home } from "./Home";
-import { Walkers } from "./Walkers";
+import { Walkers } from "./Walkers/Walkers";
 import "./main.css";
 
 let currentViewInstance: AbstractView | null = null;

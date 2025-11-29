@@ -1,6 +1,7 @@
-import { AbstractView } from "./AbstractView";
+import { AbstractView } from "../AbstractView";
 
-import { playNatureTone } from "./audio";
+import { playNatureTone } from "../audio";
+import "./walkers.css";
 
 const occupiedPositions = new Map<string, string>();
 let numOfWalkers = 0;
